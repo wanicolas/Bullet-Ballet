@@ -12,7 +12,6 @@ const config: Types.Core.GameConfig = {
   type: Phaser.AUTO,
   width: 972,
   height: 540,
-  backgroundColor: "#fff",
   physics: {
     default: "arcade",
     arcade: {
