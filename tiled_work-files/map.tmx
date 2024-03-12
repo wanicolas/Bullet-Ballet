@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="54" height="30" tilewidth="18" tileheight="18" infinite="0" nextlayerid="2" nextobjectid="1">
+ <editorsettings>
+  <export target="../public/assets/tiled/map.json" format="json"/>
+ </editorsettings>
  <tileset firstgid="1" name="tilemap_packed" tilewidth="18" tileheight="18" tilecount="180" columns="20">
-  <image source="../public/assets/tilemap_packed.png" width="360" height="162"/>
+  <image source="../public/assets/tilemaps/tilemap_packed.png" width="360" height="162"/>
   <tile id="0">
    <properties>
     <property name="collides" type="bool" value="true"/>

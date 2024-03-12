@@ -7,13 +7,27 @@ export class Game extends Scene {
     super("Game");
   }
 
+  preload() {
+    this.load.atlas(
+      "spritesheet",
+      "assets/characters/spritesheet.png",
+      "assets/characters/spritesheet.json"
+    );
+    this.load.image("tiles", "assets/tilemaps/tilemap_packed.png");
+    this.load.tilemapTiledJSON("tilemap", "assets/tilemaps/map.json");
+  }
+
   create() {
-    const map = this.make.tilemap({ key: "map" });
-    map.addTilesetImage("tilemap_packed", "tiles");
+    const map = this.make.tilemap({ key: "tilemap" });
+    const tileset = map.addTilesetImage("tilemap_packed", "tiles");
 
-    const collides = map.createLayer("map", "tilemap_packed");
-    collides.setCollisionByProperty({ collides: true } as any);
+    if (tileset) {
+      const ground = map.createLayer("map", tileset);
+      ground.setCollisionByProperty({ collides: true });
 
-    this.matter.world.convertTilemapLayer(collides);
+      this.matter.world.convertTilemapLayer(ground);
+    }
+
+    this.matter.add.sprite(100, 100, "spritesheet");
   }
 }

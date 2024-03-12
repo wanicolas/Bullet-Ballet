@@ -13,8 +13,8 @@ const config: Types.Core.GameConfig = {
   width: 972,
   height: 540,
   physics: {
-    default: "arcade",
-    arcade: {
+    default: "matter",
+    matter: {
       gravity: { y: 300, x: 0 },
       debug: false,
     },
