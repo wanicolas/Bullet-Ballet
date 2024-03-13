@@ -2,7 +2,7 @@ import { Scene } from "phaser";
 
 export class Game extends Scene {
   camera: Phaser.Cameras.Scene2D.Camera;
-  private cursors!: Phaser.Input.Keyboard.CursorKeys;
+  private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private player1!: Phaser.Physics.Matter.Sprite;
   private isTouchingGround = false;
 
@@ -31,7 +31,7 @@ export class Game extends Scene {
     const tileset = map.addTilesetImage("tilemap_packed", "tiles");
 
     const ground = map.createLayer("ground", tileset);
-    ground.setCollisionByProperty({ collides: true });
+    map.setCollisionByProperty({ collides: true });
 
     // Show the collision layer
     // this.matter.world.convertTilemapLayer(ground);
