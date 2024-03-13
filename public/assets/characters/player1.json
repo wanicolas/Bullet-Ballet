@@ -1,7 +1,7 @@
 {
 	"frames": [
 		{
-			"filename": "droite.png",
+			"filename": "player1.png",
 			"frame": {
 				"x": 0,
 				"y": 0,
@@ -22,51 +22,9 @@
 			}
 		},
 		{
-			"filename": "droite-mvmt.png",
+			"filename": "player1-move.png",
 			"frame": {
 				"x": 24,
-				"y": 0,
-				"w": 24,
-				"h": 24
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 24
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 24
-			}
-		},
-		{
-			"filename": "gauche.png",
-			"frame": {
-				"x": 48,
-				"y": 0,
-				"w": 24,
-				"h": 24
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 24,
-				"h": 24
-			},
-			"sourceSize": {
-				"w": 24,
-				"h": 24
-			}
-		},
-		{
-			"filename": "gauche-mvmt.png",
-			"frame": {
-				"x": 72,
 				"y": 0,
 				"w": 24,
 				"h": 24
@@ -88,10 +46,10 @@
 	"meta": {
 		"app": "http://www.codeandweb.com/texturepacker",
 		"version": "1.0",
-		"image": "spritesheet.png",
+		"image": "player1.png",
 		"format": "RGBA8888",
 		"size": {
-			"w": 96,
+			"w": 48,
 			"h": 24
 		},
 		"scale": "1"

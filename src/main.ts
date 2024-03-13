@@ -12,11 +12,12 @@ const config: Types.Core.GameConfig = {
   type: Phaser.AUTO,
   width: 972,
   height: 540,
+  backgroundColor: "#fff",
   physics: {
     default: "matter",
     matter: {
       gravity: { y: 300, x: 0 },
-      debug: false,
+      debug: true,
     },
   },
   parent: "game-container",
