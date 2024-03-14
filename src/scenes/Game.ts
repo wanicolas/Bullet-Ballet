@@ -33,8 +33,10 @@ export class Game extends Scene {
     const ground = map.createLayer("ground", tileset);
     map.setCollisionByProperty({ collides: true });
 
-    // Show the collision layer
-    // this.matter.world.convertTilemapLayer(ground);
+    // Convert the layer. Any colliding tiles will be given a Matter body. If a tile has collision
+    // shapes from Tiled, these will be loaded. If not, a default rectangle body will be used. The
+    // body will be accessible via tile.physics.matterBody.
+    this.matter.world.convertTilemapLayer(ground);
 
     const objectsLayer = map.getObjectLayer("objects");
 
@@ -42,7 +44,7 @@ export class Game extends Scene {
       const { x = 0, y = 0, name, width = 0 } = objData;
 
       switch (name) {
-        case "spawn": {
+        case "spawn1": {
           this.player1 = this.matter.add
             .sprite(x + width, y, "player1")
             .play("still")
@@ -59,7 +61,7 @@ export class Game extends Scene {
   }
 
   update() {
-    const speed = 5;
+    const speed = 3;
 
     if (this.cursors.left.isDown) {
       this.player1.flipX = false;
@@ -74,9 +76,9 @@ export class Game extends Scene {
       this.player1.anims.play("still");
     }
 
-    const jumpPressed = Phaser.Input.Keyboard.JustDown(this.cursors.up.isDown);
+    const jumpPressed = Phaser.Input.Keyboard.JustDown(this.cursors.up);
     if (jumpPressed && this.isTouchingGround) {
-      this.player1.setVelocityY(-5);
+      this.player1.setVelocityY(-6);
       this.isTouchingGround = false;
     }
   }
