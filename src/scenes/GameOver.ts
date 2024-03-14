@@ -1,35 +1,31 @@
-import { Scene } from 'phaser';
+import Phaser from "phaser";
 
-export class GameOver extends Scene
-{
-    camera: Phaser.Cameras.Scene2D.Camera;
-    background: Phaser.GameObjects.Image;
-    gameover_text : Phaser.GameObjects.Text;
+export default class GameOver extends Phaser.Scene {
+  constructor() {
+    super("game-over");
+  }
 
-    constructor ()
-    {
-        super('GameOver');
-    }
+  create() {
+    const { width, height } = this.scale;
 
-    create ()
-    {
-        this.camera = this.cameras.main
-        this.camera.setBackgroundColor(0xff0000);
+    this.add
+      .text(width * 0.5, height * 0.3, "Game Over", {
+        fontSize: "52px",
+        color: "#ff0000",
+      })
+      .setOrigin(0.5);
 
-        this.background = this.add.image(512, 384, 'background');
-        this.background.setAlpha(0.5);
+    const button = this.add
+      .rectangle(width * 0.5, height * 0.55, 150, 75, 0xffffff)
+      .setInteractive()
+      .on(Phaser.Input.Events.GAMEOBJECT_POINTER_UP, () => {
+        this.scene.start("game");
+      });
 
-        this.gameover_text = this.add.text(512, 384, 'Game Over', {
-            fontFamily: 'Arial Black', fontSize: 64, color: '#ffffff',
-            stroke: '#000000', strokeThickness: 8,
-            align: 'center'
-        });
-        this.gameover_text.setOrigin(0.5);
-
-        this.input.once('pointerdown', () => {
-
-            this.scene.start('MainMenu');
-
-        });
-    }
+    this.add
+      .text(button.x, button.y, "Play Again", {
+        color: "#000000",
+      })
+      .setOrigin(0.5);
+  }
 }

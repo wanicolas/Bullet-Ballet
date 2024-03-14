@@ -1,10 +1,10 @@
-import { Scene } from "phaser";
+import Phaser from "phaser";
 
-export class Game extends Scene {
-  camera: Phaser.Cameras.Scene2D.Camera;
+import PlayerController from "../controllers/Player";
+
+export default class Game extends Phaser.Scene {
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-  private player1!: Phaser.Physics.Matter.Sprite;
-  private isTouchingGround = false;
+  private playerController?: PlayerController;
 
   constructor() {
     super("Game");
@@ -12,6 +12,10 @@ export class Game extends Scene {
 
   init() {
     this.cursors = this.input.keyboard.createCursorKeys();
+
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.destroy();
+    });
   }
 
   preload() {
@@ -22,16 +26,17 @@ export class Game extends Scene {
     );
     this.load.image("tiles", "assets/tilemaps/tilemap_packed.png");
     this.load.tilemapTiledJSON("tilemap", "assets/tilemaps/map.json");
+    this.load.image("health", "assets/objects/health.png");
   }
 
   create() {
-    this.createPlayerAnimation();
+    this.scene.launch("UI");
 
     const map = this.make.tilemap({ key: "tilemap" });
     const tileset = map.addTilesetImage("tilemap_packed", "tiles");
 
     const ground = map.createLayer("ground", tileset);
-    map.setCollisionByProperty({ collides: true });
+    ground.setCollisionByProperty({ collides: true });
 
     // Convert the layer. Any colliding tiles will be given a Matter body. If a tile has collision
     // shapes from Tiled, these will be loaded. If not, a default rectangle body will be used. The
@@ -47,56 +52,36 @@ export class Game extends Scene {
         case "spawn1": {
           this.player1 = this.matter.add
             .sprite(x + width, y, "player1")
-            .play("still")
             .setFixedRotation();
 
-          this.player1.setOnCollide((data: MatterJS.ICollisionPair) => {
-            this.isTouchingGround = true;
+          this.playerController = new PlayerController(
+            this,
+            this.player1,
+            this.cursors
+          );
+
+          break;
+        }
+
+        case "health": {
+          const health = this.matter.add.sprite(x, y, "health", undefined, {
+            isStatic: true,
+            isSensor: true,
           });
 
+          health.setData("type", "health");
+          health.setData("healthPoints", 10);
           break;
         }
       }
     });
   }
 
-  update() {
-    const speed = 3;
-
-    if (this.cursors.left.isDown) {
-      this.player1.flipX = false;
-      this.player1.setVelocityX(-speed);
-      this.player1.anims.play("move", true);
-    } else if (this.cursors.right.isDown) {
-      this.player1.flipX = true;
-      this.player1.setVelocityX(speed);
-      this.player1.anims.play("move", true);
-    } else {
-      this.player1.setVelocityX(0);
-      this.player1.anims.play("still");
-    }
-
-    const jumpPressed = Phaser.Input.Keyboard.JustDown(this.cursors.up);
-    if (jumpPressed && this.isTouchingGround) {
-      this.player1.setVelocityY(-6);
-      this.isTouchingGround = false;
-    }
+  destroy() {
+    this.scene.stop("ui");
   }
 
-  private createPlayerAnimation() {
-    this.anims.create({
-      key: "still",
-      frames: [{ key: "player1", frame: "player1.png" }],
-    });
-
-    this.anims.create({
-      key: "move",
-      frames: [
-        { key: "player1", frame: "player1.png" },
-        { key: "player1", frame: "player1-move.png" },
-      ],
-      frameRate: 10,
-      repeat: -1,
-    });
+  update(t: number, dt: number) {
+    this.playerController?.update(dt);
   }
 }
