@@ -3,8 +3,8 @@ import Phaser from "phaser";
 import PlayerController from "../controllers/Player";
 
 export default class Game extends Phaser.Scene {
-  private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-  private playerController?: PlayerController;
+  private player1Controller?: PlayerController;
+  private player2Controller?: PlayerController;
 
   constructor() {
     super("Game");
@@ -24,13 +24,34 @@ export default class Game extends Phaser.Scene {
       "assets/characters/player1.png",
       "assets/characters/player1.json"
     );
+    this.load.atlas(
+      "player2",
+      "assets/characters/player2.png",
+      "assets/characters/player2.json"
+    );
     this.load.image("tiles", "assets/tilemaps/tilemap_packed.png");
     this.load.tilemapTiledJSON("tilemap", "assets/tilemaps/map.json");
     this.load.image("health", "assets/objects/health.png");
+    this.load.audio("theme", ["assets/theme.mp3"]);
   }
 
   create() {
     this.scene.launch("UI");
+    this.sound.play("theme", { loop: true });
+
+    const player1Controls = this.input.keyboard.addKeys({
+      up: "z",
+      down: "s",
+      left: "q",
+      right: "d",
+    });
+
+    const player2Controls = this.input.keyboard.addKeys({
+      up: "i",
+      down: "k",
+      left: "j",
+      right: "l",
+    });
 
     const map = this.make.tilemap({ key: "tilemap" });
     const tileset = map.addTilesetImage("tilemap_packed", "tiles");
@@ -54,10 +75,23 @@ export default class Game extends Phaser.Scene {
             .sprite(x + width, y, "player1")
             .setFixedRotation();
 
-          this.playerController = new PlayerController(
+          this.player1Controller = new PlayerController(
             this,
             this.player1,
-            this.cursors
+            player1Controls
+          );
+
+          break;
+        }
+        case "spawn2": {
+          this.player2 = this.matter.add
+            .sprite(x + width, y, "player2")
+            .setFixedRotation();
+
+          this.player2Controller = new PlayerController(
+            this,
+            this.player2,
+            player2Controls
           );
 
           break;
@@ -82,6 +116,7 @@ export default class Game extends Phaser.Scene {
   }
 
   update(t: number, dt: number) {
-    this.playerController?.update(dt);
+    this.player1Controller?.update(dt);
+    this.player2Controller?.update(dt);
   }
 }

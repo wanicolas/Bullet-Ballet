@@ -1,10 +1,13 @@
 import Phaser from "phaser";
 import StateMachine from "../statemachine/statemachine";
 import { sharedInstance as events } from "../scenes/EventCenter";
+
+type CursorKeys = Phaser.Types.Input.Keyboard.CursorKeys;
+
 export default class Player {
   private scene: Phaser.Scene;
   private sprite: Phaser.Physics.Matter.Sprite;
-  private cursors: {};
+  private cursors: CursorKeys;
 
   private stateMachine: StateMachine;
   private health = 100;
@@ -12,7 +15,7 @@ export default class Player {
   constructor(
     scene: Phaser.Scene,
     sprite: Phaser.Physics.Matter.Sprite,
-    cursors: object
+    cursors: CursorKeys
   ) {
     this.scene = scene;
     this.sprite = sprite;
