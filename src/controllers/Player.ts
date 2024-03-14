@@ -9,6 +9,8 @@ export default class Player {
   private stateMachine: StateMachine;
   private health = 100;
 
+  private bullets?: Phaser.Physics.Matter.Sprite[];
+
   constructor(
     scene: Phaser.Scene,
     sprite: Phaser.Physics.Matter.Sprite,
@@ -103,9 +105,15 @@ export default class Player {
     if (jumpJustPressed) {
       this.stateMachine.setState("jump");
     }
+
+    const shootJustPressed = Phaser.Input.Keyboard.JustDown(this.cursors.shoot);
+    if (shootJustPressed) {
+      this.shootBullet();
+      console.log("shoot");
+    }
   }
 
-  private moveOnUpdate() {
+  private handleLeftRightMovement() {
     const speed = 3;
 
     if (this.cursors.left.isDown) {
@@ -116,10 +124,13 @@ export default class Player {
       this.sprite.setVelocityX(speed);
     } else {
       this.sprite.setVelocityX(0);
-      this.stateMachine.setState("idle");
     }
+  }
 
-    const jumpJustPressed = Phaser.Input.Keyboard.JustDown(this.cursors.space);
+  private moveOnUpdate() {
+    this.handleLeftRightMovement();
+
+    const jumpJustPressed = Phaser.Input.Keyboard.JustDown(this.cursors.up);
     if (jumpJustPressed) {
       this.stateMachine.setState("jump");
     }
@@ -130,23 +141,32 @@ export default class Player {
   }
 
   private jumpOnEnter() {
-    this.sprite.setVelocityY(-12);
+    this.sprite.setVelocityY(-7);
   }
 
   private jumpOnUpdate() {
-    const speed = 5;
-
-    if (this.cursors.left.isDown) {
-      this.sprite.flipX = true;
-      this.sprite.setVelocityX(-speed);
-    } else if (this.cursors.right.isDown) {
-      this.sprite.flipX = false;
-      this.sprite.setVelocityX(speed);
-    }
+    this.handleLeftRightMovement();
   }
 
   private healthRecoverOnEnter() {
     this.setHealth(this.health + 10);
+  }
+
+  private shootBullet() {
+    const bullet = this.scene.matter.add.sprite(
+      this.sprite.x,
+      this.sprite.y,
+      "bullet"
+    );
+
+    const speed = 10;
+    if (this.sprite.flipX) {
+      bullet.setVelocityX(-speed);
+    } else {
+      bullet.setVelocityX(speed);
+    }
+
+    this.bullets?.push(bullet);
   }
 
   private createAnimations() {

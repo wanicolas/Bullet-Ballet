@@ -30,8 +30,13 @@ export default class Game extends Phaser.Scene {
       "assets/characters/player2.json"
     );
     this.load.image("tiles", "assets/tilemaps/tilemap_packed.png");
+    this.load.image(
+      "backgroundTiles",
+      "assets/tilemaps/tilemap-backgrounds_packed.png"
+    );
     this.load.tilemapTiledJSON("tilemap", "assets/tilemaps/map.json");
     this.load.image("health", "assets/objects/health.png");
+    this.load.image("bullet", "assets/bullet.png");
     this.load.audio("theme", ["assets/theme.mp3"]);
   }
 
@@ -44,6 +49,7 @@ export default class Game extends Phaser.Scene {
       down: "s",
       left: "q",
       right: "d",
+      shoot: "c",
     });
 
     const player2Controls = this.input.keyboard.addKeys({
@@ -51,11 +57,17 @@ export default class Game extends Phaser.Scene {
       down: "k",
       left: "j",
       right: "l",
+      shoot: "n",
     });
 
     const map = this.make.tilemap({ key: "tilemap" });
+    const backgroundTileset = map.addTilesetImage(
+      "tilemap-backgrounds_packed",
+      "backgroundTiles"
+    );
     const tileset = map.addTilesetImage("tilemap_packed", "tiles");
 
+    const background = map.createLayer("background", backgroundTileset);
     const ground = map.createLayer("ground", tileset);
     ground.setCollisionByProperty({ collides: true });
 
@@ -115,7 +127,7 @@ export default class Game extends Phaser.Scene {
     this.scene.stop("ui");
   }
 
-  update(t: number, dt: number) {
+  update(dt: number) {
     this.player1Controller?.update(dt);
     this.player2Controller?.update(dt);
   }
