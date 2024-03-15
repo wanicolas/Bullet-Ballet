@@ -7,7 +7,7 @@ export default class UI extends Phaser.Scene {
   private lastHealth = 100;
 
   constructor() {
-    super("ui");
+    super({ key: "UI" });
   }
 
   init() {}

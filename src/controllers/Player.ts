@@ -7,7 +7,7 @@ export default class Player {
   private cursors: {};
 
   private stateMachine: StateMachine;
-  private health = 100;
+  private health = 50;
 
   private bullets?: Phaser.Physics.Matter.Sprite[];
 

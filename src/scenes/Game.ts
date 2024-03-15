@@ -124,7 +124,7 @@ export default class Game extends Phaser.Scene {
   }
 
   destroy() {
-    this.scene.stop("ui");
+    this.scene.stop("UI");
   }
 
   update(dt: number) {
