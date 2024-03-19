@@ -3,17 +3,17 @@ import StateMachine from "../statemachine/statemachine";
 import { sharedInstance as events } from "../scenes/EventCenter";
 export default class Player {
   private scene: Phaser.Scene;
-  private sprite: Phaser.Physics.Matter.Sprite;
+  private sprite: Phaser.Physics.Arcade.Sprite;
   private cursors: {};
 
   private stateMachine: StateMachine;
   private health = 50;
 
-  private bullets?: Phaser.Physics.Matter.Sprite[];
+  private bullets?: Phaser.Physics.Arcade.Sprite[];
 
   constructor(
     scene: Phaser.Scene,
-    sprite: Phaser.Physics.Matter.Sprite,
+    sprite: Phaser.Physics.Arcade.Sprite,
     cursors: object
   ) {
     this.scene = scene;
@@ -45,36 +45,6 @@ export default class Player {
         onEnter: this.deadOnEnter,
       })
       .setState("idle");
-
-    this.sprite.setOnCollide((data: MatterJS.ICollisionPair) => {
-      const body = data.bodyB as MatterJS.BodyType;
-
-      const gameObject = body.gameObject;
-
-      if (!gameObject) {
-        return;
-      }
-
-      if (gameObject instanceof Phaser.Physics.Matter.TileBody) {
-        if (this.stateMachine.isCurrentState("jump")) {
-          this.stateMachine.setState("idle");
-        }
-        return;
-      }
-
-      const sprite = gameObject as Phaser.Physics.Matter.Sprite;
-      const type = sprite.getData("type");
-
-      switch (type) {
-        case "health": {
-          const value = sprite.getData("healthPoints") ?? 10;
-          this.health = Phaser.Math.Clamp(this.health + value, 0, 100);
-          events.emit("health-changed", this.health);
-          sprite.destroy();
-          break;
-        }
-      }
-    });
   }
 
   update(dt: number) {
@@ -127,6 +97,10 @@ export default class Player {
     }
   }
 
+  private moveOnEnter() {
+    this.sprite.play("move");
+  }
+
   private moveOnUpdate() {
     this.handleLeftRightMovement();
 
@@ -153,7 +127,7 @@ export default class Player {
   }
 
   private shootBullet() {
-    const bullet = this.scene.matter.add.sprite(
+    const bullet = this.scene.physics.add.sprite(
       this.sprite.x,
       this.sprite.y,
       "bullet"
@@ -167,7 +141,9 @@ export default class Player {
     }
 
     this.bullets?.push(bullet);
-  }
+
+    this.setupBulletCollision(bullet);
+  }  
 
   private createAnimations() {
     this.sprite.anims.create({
