@@ -3,10 +3,10 @@ import Phaser from "phaser";
 import PlayerController from "../controllers/Player";
 
 export default class Game extends Phaser.Scene {
-  player1Controller?: PlayerController;
-  player2Controller?: PlayerController;
   player1?: Phaser.Physics.Arcade.Sprite;
   player2?: Phaser.Physics.Arcade.Sprite;
+  player1Controller?: PlayerController;
+  player2Controller?: PlayerController;
 
   constructor() {
     super("Game");
@@ -19,17 +19,15 @@ export default class Game extends Phaser.Scene {
   }
 
   preload() {
-    // Load the player sprites and images
-    this.load.atlas(
-      "player1",
-      "assets/characters/player1.png",
-      "assets/characters/player1.json"
-    );
-    this.load.atlas(
-      "player2",
-      "assets/characters/player2.png",
-      "assets/characters/player2.json"
-    );
+    // Load the player spritesheets
+    this.load.spritesheet("player1", "assets/characters/player1.png", {
+      frameWidth: 24,
+      frameHeight: 24,
+    });
+    this.load.spritesheet("player2", "assets/characters/player2.png", {
+      frameWidth: 24,
+      frameHeight: 24,
+    });
 
     // Load the map tiles and background images
     this.load.image("tiles", "assets/tilemaps/tilemap_packed.png");
@@ -62,25 +60,25 @@ export default class Game extends Phaser.Scene {
     const terrain = map.createLayer("terrain", tileset);
     terrain.setCollisionByProperty({ collides: true });
 
-    const player1Controls = this.input.keyboard.addKeys({
+    const player1Controls = {
       up: "z",
       down: "s",
       left: "q",
       right: "d",
       shoot: "c",
-    });
+    };
 
-    const player2Controls = this.input.keyboard.addKeys({
+    const player2Controls = {
       up: "i",
       down: "k",
       left: "j",
       right: "l",
       shoot: "n",
-    });
+    };
 
     const objectsLayer = map.getObjectLayer("objects");
 
-    objectsLayer.objects.forEach((objData) => {
+    objectsLayer?.objects.forEach((objData) => {
       const { x = 0, y = 0, name, width = 0 } = objData;
 
       switch (name) {
@@ -118,16 +116,17 @@ export default class Game extends Phaser.Scene {
     // Add collision between the players, the terrain and the objects
     this.physics.add.collider(this.player1, terrain);
     this.physics.add.collider(this.player2, terrain);
-            this.physics.add.collider(this.player1, objectsLayer);
-
+    this.physics.add.collider(this.player1, objectsLayer);
+    this.player1?.setCollideWorldBounds(true);
+    this.player2?.setCollideWorldBounds(true);
   }
 
   destroy() {
     this.scene.stop("UI");
   }
 
-  update(dt: number) {
-    this.player1Controller?.update(dt);
-    this.player2Controller?.update(dt);
+  update() {
+    this.player1Controller?.update();
+    this.player2Controller?.update();
   }
 }

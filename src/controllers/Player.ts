@@ -1,164 +1,76 @@
 import Phaser from "phaser";
-import StateMachine from "../statemachine/statemachine";
-import { sharedInstance as events } from "../scenes/EventCenter";
+
 export default class Player {
-  private scene: Phaser.Scene;
-  private sprite: Phaser.Physics.Arcade.Sprite;
-  private cursors: {};
-
-  private stateMachine: StateMachine;
-  private health = 50;
-
-  private bullets?: Phaser.Physics.Arcade.Sprite[];
+  scene: Phaser.Scene;
+  player: Phaser.Physics.Arcade.Sprite;
+  cursors: {
+    up: Phaser.Input.Keyboard.Key;
+    down: Phaser.Input.Keyboard.Key;
+    left: Phaser.Input.Keyboard.Key;
+    right: Phaser.Input.Keyboard.Key;
+    shoot: Phaser.Input.Keyboard.Key;
+  };
+  speed: 120;
+  hp: 50;
 
   constructor(
     scene: Phaser.Scene,
-    sprite: Phaser.Physics.Arcade.Sprite,
+    player: Phaser.Physics.Arcade.Sprite,
     cursors: object
   ) {
     this.scene = scene;
-    this.sprite = sprite;
-    this.cursors = cursors;
+    this.player = player;
+    this.cursors = cursors as {
+      up: Phaser.Input.Keyboard.Key;
+      down: Phaser.Input.Keyboard.Key;
+      left: Phaser.Input.Keyboard.Key;
+      right: Phaser.Input.Keyboard.Key;
+      shoot: Phaser.Input.Keyboard.Key;
+    };
 
-    this.createAnimations();
-
-    this.stateMachine = new StateMachine(this, "player");
-
-    this.stateMachine
-      .addState("idle", {
-        onEnter: this.idleOnEnter,
-        onUpdate: this.idleOnUpdate,
-      })
-      .addState("move", {
-        onEnter: this.moveOnEnter,
-        onUpdate: this.moveOnUpdate,
-        onExit: this.moveOnExit,
-      })
-      .addState("jump", {
-        onEnter: this.jumpOnEnter,
-        onUpdate: this.jumpOnUpdate,
-      })
-      .addState("health-recover", {
-        onEnter: this.healthRecoverOnEnter,
-      })
-      .addState("dead", {
-        onEnter: this.deadOnEnter,
-      })
-      .setState("idle");
-  }
-
-  update(dt: number) {
-    this.stateMachine.update(dt);
-  }
-
-  private setHealth(value: number) {
-    this.health = Phaser.Math.Clamp(value, 0, 100);
-
-    events.emit("health-changed", this.health);
-
-    // TODO: check for death
-    if (this.health <= 0) {
-      this.stateMachine.setState("dead");
-    }
-  }
-
-  private idleOnEnter() {
-    this.sprite.play("idle");
-  }
-
-  private idleOnUpdate() {
-    if (this.cursors.left.isDown || this.cursors.right.isDown) {
-      this.stateMachine.setState("move");
-    }
-
-    const jumpJustPressed = Phaser.Input.Keyboard.JustDown(this.cursors.up);
-    if (jumpJustPressed) {
-      this.stateMachine.setState("jump");
-    }
-
-    const shootJustPressed = Phaser.Input.Keyboard.JustDown(this.cursors.shoot);
-    if (shootJustPressed) {
-      this.shootBullet();
-      console.log("shoot");
-    }
-  }
-
-  private handleLeftRightMovement() {
-    const speed = 120;
-
-    if (this.cursors.left.isDown) {
-      this.sprite.flipX = true;
-      this.sprite.setVelocityX(-speed);
-    } else if (this.cursors.right.isDown) {
-      this.sprite.flipX = false;
-      this.sprite.setVelocityX(speed);
-    } else {
-      this.sprite.setVelocityX(0);
-    }
-  }
-
-  private moveOnEnter() {
-    this.sprite.play("move");
-  }
-
-  private moveOnUpdate() {
-    this.handleLeftRightMovement();
-
-    const jumpJustPressed = Phaser.Input.Keyboard.JustDown(this.cursors.up);
-    if (jumpJustPressed) {
-      this.stateMachine.setState("jump");
-    }
-  }
-
-  private moveOnExit() {
-    this.sprite.stop();
-  }
-
-  private jumpOnEnter() {
-    this.sprite.setVelocityY(-160);
-  }
-
-  private jumpOnUpdate() {
-    this.handleLeftRightMovement();
-  }
-
-  private healthRecoverOnEnter() {
-    this.setHealth(this.health + 10);
-  }
-
-  private shootBullet() {
-    const bullet = this.scene.physics.add.sprite(
-      this.sprite.x,
-      this.sprite.y,
-      "bullet"
-    );
-
-    const speed = 10;
-    if (this.sprite.flipX) {
-      bullet.setVelocityX(-speed);
-    } else {
-      bullet.setVelocityX(speed);
-    }
-
-    this.bullets?.push(bullet);
-
-    this.setupBulletCollision(bullet);
-  }
-
-  private createAnimations() {
-    this.sprite.anims.create({
+    player.anims.create({
       key: "idle",
-      frames: [{ key: "player1", frame: "player1.png" }],
+      frames: [{ key: "player", frame: 0 }],
+      frameRate: 20,
     });
 
-    this.sprite.anims.create({
+    player.anims.create({
       key: "move",
-      frames: [
-        { key: "player1", frame: "player1.png" },
-        { key: "player1", frame: "player1-move.png" },
-      ],
+      frames: player.anims.generateFrameNumbers("player", { start: 0, end: 1 }),
       frameRate: 10,
       repeat: -1,
     });
+
+    // scene.physics.add.overlap(
+    //   this.player,
+    //   scene.health,
+    //   collectHealth,
+    //   null,
+    //   this
+    // );
+  }
+
+  update() {
+    if (this.cursors.left.isDown) {
+      this.player.anims.play("move", true);
+      this.player.setVelocityX(-this.speed);
+    } else if (this.cursors.right.isDown) {
+      this.player.anims.play("move", true);
+      this.player.setVelocityX(this.speed);
+    } else {
+      this.player.setVelocityX(0);
+      this.player.anims.play("idle");
+    }
+
+    if (this.cursors.up.isDown && this.player.body.touching.down) {
+      this.player.setVelocityY(-160);
+      this.player.anims.play("jump", true);
+    }
+
+    // collectHealth(player, health);
+    // {
+    //   health.disableBody(true, true);
+    //   this.health += 10;
+    // }
   }
 }
