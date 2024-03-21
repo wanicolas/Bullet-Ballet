@@ -84,7 +84,7 @@ export default class Player {
   }
 
   private handleLeftRightMovement() {
-    const speed = 3;
+    const speed = 120;
 
     if (this.cursors.left.isDown) {
       this.sprite.flipX = true;
@@ -115,7 +115,7 @@ export default class Player {
   }
 
   private jumpOnEnter() {
-    this.sprite.setVelocityY(-7);
+    this.sprite.setVelocityY(-160);
   }
 
   private jumpOnUpdate() {
@@ -143,7 +143,7 @@ export default class Player {
     this.bullets?.push(bullet);
 
     this.setupBulletCollision(bullet);
-  }  
+  }
 
   private createAnimations() {
     this.sprite.anims.create({
