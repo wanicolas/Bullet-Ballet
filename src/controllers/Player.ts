@@ -30,13 +30,16 @@ export default class Player {
 
     player.anims.create({
       key: "idle",
-      frames: [{ key: "player", frame: 0 }],
+      frames: [{ key: player.name, frame: 0 }],
       frameRate: 20,
     });
 
     player.anims.create({
       key: "move",
-      frames: player.anims.generateFrameNumbers("player", { start: 0, end: 1 }),
+      frames: player.anims.generateFrameNumbers(player.name, {
+        start: 0,
+        end: 1,
+      }),
       frameRate: 10,
       repeat: -1,
     });
@@ -57,6 +60,7 @@ export default class Player {
     } else if (this.cursors.right.isDown) {
       this.player.anims.play("move", true);
       this.player.setVelocityX(this.speed);
+      this.player.flipX;
     } else {
       this.player.setVelocityX(0);
       this.player.anims.play("idle");
@@ -64,7 +68,6 @@ export default class Player {
 
     if (this.cursors.up.isDown && this.player.body.touching.down) {
       this.player.setVelocityY(-160);
-      this.player.anims.play("jump", true);
     }
 
     // collectHealth(player, health);

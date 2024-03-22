@@ -60,21 +60,21 @@ export default class Game extends Phaser.Scene {
     const terrain = map.createLayer("terrain", tileset);
     terrain.setCollisionByProperty({ collides: true });
 
-    const player1Controls = {
-      up: "z",
-      down: "s",
-      left: "q",
-      right: "d",
-      shoot: "c",
-    };
+    const player1Controls = this.input.keyboard.addKeys({
+      up: Phaser.Input.Keyboard.KeyCodes.Z,
+      down: Phaser.Input.Keyboard.KeyCodes.S,
+      left: Phaser.Input.Keyboard.KeyCodes.Q,
+      right: Phaser.Input.Keyboard.KeyCodes.D,
+      shoot: Phaser.Input.Keyboard.KeyCodes.C,
+    }) as Phaser.Types.Input.Keyboard.CursorKeys;
 
-    const player2Controls = {
-      up: "i",
-      down: "k",
-      left: "j",
-      right: "l",
-      shoot: "n",
-    };
+    const player2Controls = this.input.keyboard.addKeys({
+      up: Phaser.Input.Keyboard.KeyCodes.I,
+      down: Phaser.Input.Keyboard.KeyCodes.K,
+      left: Phaser.Input.Keyboard.KeyCodes.J,
+      right: Phaser.Input.Keyboard.KeyCodes.L,
+      shoot: Phaser.Input.Keyboard.KeyCodes.N,
+    }) as Phaser.Types.Input.Keyboard.CursorKeys;
 
     const objectsLayer = map.getObjectLayer("objects");
 
@@ -84,6 +84,7 @@ export default class Game extends Phaser.Scene {
       switch (name) {
         case "spawn1": {
           this.player1 = this.physics.add.sprite(x + width, y, "player1");
+          this.player1.name = "player1";
 
           this.player1Controller = new PlayerController(
             this,
@@ -94,6 +95,7 @@ export default class Game extends Phaser.Scene {
         }
         case "spawn2": {
           this.player2 = this.physics.add.sprite(x + width, y, "player2");
+          this.player2.name = "player2";
 
           this.player2Controller = new PlayerController(
             this,
